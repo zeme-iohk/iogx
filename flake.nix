@@ -75,7 +75,7 @@
     #   flake = false;
     # };
 
-    # antaeus.url = "github:input-output-hk/antaeus";
+    antaeus.url = "./sc-repos/antaeus";
   };
 
   outputs = inputs:
@@ -112,6 +112,8 @@
       # inherit marlowe-cardano antaeus marconi;
 
       inherit (iogx) mkFlake l;
+      
+      antaeus = inputs.antaeus;
 
       # hydraJobs = mkOutputs "hydraJobs";
       # devShells = mkOutputs "devShells";
