@@ -75,7 +75,7 @@
     #   flake = false;
     # };
 
-    antaeus.url = "./sc-repos/antaeus";
+    antaeus.url = "path:./sc-repos/antaeus";
   };
 
   outputs = inputs:
