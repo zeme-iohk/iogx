@@ -2,8 +2,8 @@
 
 { flake, core-modules }:
 
-let 
-  filterDisabledScripts = 
+let
+  filterDisabledScripts =
     l.filterAttrs (_: { enabled ? true, ... }: enabled);
 
 
@@ -19,19 +19,19 @@ let
     l.mapAttrsToList (_: l.getAttrWithDefault "group" "");
 
 
-  getAndFilterDisabledScripts = mod: 
-    filterDisabledScripts (l.getAttrWithDefault "scripts" {} mod);
+  getAndFilterDisabledScripts = mod:
+    filterDisabledScripts (l.getAttrWithDefault "scripts" { } mod);
 
 
-  all-packages = 
-    l.concatMap (l.getAttrWithDefault "packages" []) core-modules;
-  
+  all-packages =
+    l.concatMap (l.getAttrWithDefault "packages" [ ]) core-modules;
 
-  all-scripts = 
+
+  all-scripts =
     l.recursiveUpdateMany (map getAndFilterDisabledScripts core-modules);
 
 
-  formatFlakeOutputs = group: command: 
+  formatFlakeOutputs = group: command:
     if group == "devShells" then
       let fromGhc = ghc: "nix develop .#${ghc}\nnix develop .#${ghc}-profiled";
       in l.concatStringsSep "\n" (map fromGhc flakeopts.haskellCompilers)
@@ -55,26 +55,26 @@ let
   '';
 
 
-  list-haskell-outputs-script = {
+  list-haskell-outputs = {
     description = "list the haskell outputs buildable by nix";
     exec = ''echo "${formatted-haskell-outputs}"'';
   };
 
 
-  menu-content = 
-    let 
-      extra-names = 
-        ["list-haskell-outputs" "menu" ]; 
-      extra-descriptions = 
-        [list-haskell-outputs-script.description menu-script.description];
-      content = 
+  menu-content =
+    let
+      extra-names =
+        [ "list-haskell-outputs" "menu" ];
+      extra-descriptions =
+        [ list-haskell-outputs.description menu.description ];
+      content =
         l.prettyTwoColumnsLayout {
           indent = "👉 ";
           gap-width = 4;
           lefts = extra-names ++ extractScriptNames all-scripts;
           rights = extra-descriptions ++ extractScriptDescriptions all-scripts;
         };
-    in 
+    in
     content;
 
 
@@ -88,15 +88,15 @@ let
     echo
   '';
 
-  
-  menu-script = {
+
+  menu = {
     description = "print this message";
     exec = print-menu-content;
   };
 
 
   utility-module = {
-    scripts = { inherit list-haskell-outputs-script menu-script; };
+    scripts = { inherit list-haskell-outputs menu; };
     enterShell = ''
       export PS1="${flakeopts.shellPrompt}"
       menu

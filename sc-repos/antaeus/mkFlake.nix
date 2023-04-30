@@ -1,10 +1,11 @@
-{ iogx-inputs }: 
+{ iogx-inputs }:
 
-let 
+let
   flake = iogx-inputs.self.mkFlake {
     inputs = { self = flake; };
     repoRoot = iogx-inputs.antaeus;
     shellName = "antaeus";
+    haskellProjectFile = import ./nix/haskell-project.nix;
   };
-in 
-  flake
+in
+flake
