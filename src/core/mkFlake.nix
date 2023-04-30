@@ -12,6 +12,8 @@ let
 
       prefixName = name:
         let
+          # is-single-compiler = l.listLength flakeopts.haskellCompilers == 1;
+          # is-default-compiler = ghc == flakeopts.defaultHaskellCompiler;
           prefix = flakeopts.flakeOutputsPrefix;
           cross' = l.optionalString cross "-mingwW64";
           name' = "-${replaceCons name}";
@@ -118,7 +120,7 @@ let
       };
     in 
       if flakeopts.includeHydraJobs then 
-        flake'
+        flake // flake'
       else 
         flake;
 
@@ -146,7 +148,7 @@ let
       addDevShells
       # Must come after addDevShells
       addDefaultDevenvShell 
-      # We can now add the hydraJobs
+      # We can now add the hydraJobs, since the flake is fully populated now
       addHydraJobs
     ];
 

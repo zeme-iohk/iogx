@@ -1,4 +1,4 @@
-{ pkgs, flakeopts, l, ... }:
+{ inputs, systemized-inputs, pkgs, flakeopts, l, ... }:
 
 { flake }:
 
@@ -19,7 +19,7 @@ let
 
 
   # Hydra doesn't like these attributes hanging around in "jobsets": it thinks they're jobs!
-  cleanJobs = l.filterAttrsRecursive (n: _: n != "recurseForDerivations");
+  cleanJobs = l.filterAttrsRecursive (name: _: name != "recurseForDerivations");
 
 
   addRequiredJob = jobs: 
@@ -39,12 +39,23 @@ let
     in 
       jobs // jobs';
 
+  
+  addUserPerSystemOutputs = jobs: 
+    let 
+      flake = flakeopts.perSystemOutputs 
+        { inherit inputs systemized-inputs flakeopts pkgs; };
+      
+      jobs' = removeAttrs flake ["ciJobs" "hydraJobs"];
+    in 
+      l.recursiveUpdate jobs jobs';
+
 
   mkFinalJobset = 
     l.composeManyLeft [ 
       removePlanNix 
       filterProfiledHaskell 
       replaceDevShells
+      addUserPerSystemOutputs
       blacklistJobs 
       cleanJobs
       addRequiredJob

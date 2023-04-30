@@ -29,13 +29,14 @@ let
     , includeHydraJobs ? true
     , blacklistedHydraJobs ? []
     , excludeProfiledHaskellFromHydraJobs ? true
+    , includedFlakeOutputsInHydraJobs ? [ "packages" "apps" "checks" ]
     # ReadTheDocsSite
     , includeReadTheDocsSite ? false 
     , readTheDocsSiteRoot ? repoRoot + "/doc"
     , readTheDocsHaddockPrologue ? ""
     , readTheDocsExtraHaddockPackages ? _: []
     # Custom perSystemOutputs
-    , perSystemOutputs ? optionalFile (repoRoot + "/nix/per-system-outputs.nix")
+    , perSystemOutputs ? optionalFile (repoRoot + "/nix/per-system-outputs.nix") # TODO rename 
     # Base flake
     , baseFlake ? {}
     }:
