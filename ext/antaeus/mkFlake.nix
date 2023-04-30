@@ -1,13 +1,12 @@
 { iogx-inputs }:
 
 let
-  flake = iogx-inputs.self.mkFlake { } {
+  flake = iogx-inputs.self.mkFlake {
+    inputs = {};
     repoRoot = iogx-inputs.antaeus;
-    nixFolder = ./nix;
+    haskellProjectFile = import ./nix/haskell-project.nix;
     shellName = "antaeus";
-    systems = [ "x86_64-linux" "x86_64-darwin" ];
-    haskell.compilers = [ "ghc8107" ];
-    haskell.crossSystem = "x86_64-linux";
+    # haskellCrossSystem = "x86_64-linux";
   };
 in
 flake
